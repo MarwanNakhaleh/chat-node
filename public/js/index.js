@@ -13,5 +13,24 @@ socket.on('disconnect', function() {
 });
 
 socket.on('newMessage', function(message) {
-  console.log('newMessage', message);
+  var li = jQuery('<li></li>');
+  li.text(`${message.from}: ${message.text}`);
+  jQuery('#messages').append(li);
+});
+
+socket.emit('createMessage', {
+  from: 'Marwan',
+  text: 'hello'
+}, function() {
+  console.log('hello');
+});
+
+jQuery('#message-form').on('submit', function(e) {
+  e.preventDefault();
+  socket.emit('createMessage', {
+    from: 'Anonymous',
+    text: jQuery('[name=message]').val()
+  }, function() {
+
+  });
 });
