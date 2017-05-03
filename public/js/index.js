@@ -13,9 +13,18 @@ socket.on('disconnect', function() {
 });
 
 socket.on('newMessage', function(message) {
-  var li = jQuery('<li></li>');
-  li.text(`${message.from}: ${message.text}`);
-  jQuery('#messages').append(li);
+  var formattedTime = moment(message.createdAt).format('LLL');
+  var template = jQuery('#message-template').html();
+  var html = Mustache.render(template, {
+    text: message.text,
+    from: message.from,
+    createdAt: formattedTime
+  });
+  jQuery('#messages').append(html);
+  // var formattedTime = moment(message.createdAt).format('LLL');
+  // var li = jQuery('<li></li>');
+  // li.text(`${message.from}\t${formattedTime}: ${message.text}`);
+  // jQuery('#messages').append(li);
 });
 
 socket.emit('createMessage', {
@@ -36,11 +45,19 @@ jQuery('#message-form').on('submit', function(e) {
 });
 
 socket.on('newLocationMessage', function(locMessage) {
-  var li = jQuery('<li></li>');
-  var ayy = jQuery(`<a href='${locMessage.url}' target='_blank'>${locMessage.lat}, ${locMessage.long}</a>`);
-  li.text(`${locMessage.from}: I am at `);
-  li.append(ayy);
-  jQuery('#messages').append(li);
+  var formattedTime = moment(locMessage.createdAt).format('LLL');
+  var template = jQuery('#location-message-template').html();
+  var html = Mustache.render(template, {
+    from: locMessage.from,
+    url: locMessage.url,
+    createdAt: formattedTime
+  });
+  jQuery('#messages').append(html);
+  // var li = jQuery('<li></li>');
+  // var ayy = jQuery(`<a href='${locMessage.url}' target='_blank'>${locMessage.lat}, ${locMessage.long}</a>`);
+  // li.text(`${locMessage.from}\t${formattedTime}: I am at `);
+  // li.append(ayy);
+  // jQuery('#messages').append(li);
 })
 
 jQuery('#send-location').on('click', function() {
