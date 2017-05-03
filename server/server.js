@@ -12,26 +12,25 @@ var io = socketIO(server);
 
 app.use(express.static(publicPath));
 
+var {
+  generateMessage
+} = require('./utils/message');
+
 io.on('connection', (socket) => {
   console.log('user has connected');
 
-  socket.emit('newMessage', {
-    from: 'marwan@gmail.com',
-    text: 'what\'s up?',
-    createdAt: 12345
-  });
+  socket.emit('newMessage', generateMessage('Admin', 'this is a message'));
 
-  socket.on('createEmail', (email) => {
-    console.log('createEmail', email);
-  })
+  socket.broadcast.emit('newMessage', generateMessage('Admin', 'new user has joined'));
 
   socket.on('createMessage', (message) => {
     console.log('createMessage', message);
-  })
+    io.emit('newMessage', generateMessage(message.from, message.text));
+  });
 
   socket.on('disconnect', () => {
     console.log('connection lost');
-  })
+  });
 })
 
 server.listen(port, () => {
